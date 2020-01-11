@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block content %}
+<div class="card" style="width: 100%;">
+  <form action="{% url 'upload' %}" method="post">
+    {% csrf_token %}
+    <div class="card-body">
+      <h5 class="card-title text-center">Upload Resume</h5>
+      <p class="card-text" style="width:100%">
+        <input type="file" name="resume" id="resume" accept=".pdf,.docx" />
+      </p>
+      <input
+        type="submit"
+        href="#"
+        class="btn btn-primary"
+        style="background-color: #bd5d38; width:100%"
+        value="Parse My Resume!"
+      />
+    </div>
+  </form>
+</div>
+{% endblock %}
