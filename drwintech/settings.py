@@ -1,4 +1,3 @@
-import dj_database_url
 import os
 import django_heroku
 
@@ -11,7 +10,8 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Get secret key from environment variable: hiding the secret key
-SECRET_KEY = os.environ.get('DRWINTECH_SECRET_KEY', None)
+SECRET_KEY = 'a-ihyev+a2+5hcc4b*kay(14*@@3ss+r6@k-1r*4ra@ijlyoqi'
+#os.environ.get('DRWINTECH_SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -32,7 +32,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -120,8 +119,4 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
-prod_db = dj_database_url.config(conn_max_age=500)
-DATABASES['default'].update(prod_db)
 django_heroku.settings(locals())

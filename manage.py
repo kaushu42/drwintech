@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 import os
 import sys
+import subprocess
+
+subprocess.call(['python', '-m', 'spacy', 'download', 'en_core_web_sm'])
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "drwintech.settings")
