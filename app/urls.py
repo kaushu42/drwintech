@@ -5,5 +5,6 @@ from django.contrib import admin
 from . import views
 urlpatterns = [
     path('', views.index, name='upload'),
-
+    path('skills', views.skills, name='skills'),
+    path('people', views.people, name='people'),
 ]

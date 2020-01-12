@@ -1,10 +1,8 @@
 import os
 
-from django.http import HttpResponse
 from django.shortcuts import render
 
-
-from app import utils
+from app import utils, models
 
 
 def index(request):
@@ -33,6 +31,15 @@ def index(request):
     })
 
 
-def handleUpload(request):
+def skills(request):
+    s = models.Skill.objects.all()
+    return render(request, 'skills.html', {
+        'skills': s
+    })
 
-    return HttpResponse('Uploaded')
+
+def people(request):
+    p = models.Person.objects.all()
+    return render(request, 'people.html', {
+        'people': p
+    })

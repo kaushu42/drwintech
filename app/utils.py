@@ -6,6 +6,8 @@ from django.core.files.storage import FileSystemStorage
 
 from pyresparser import ResumeParser
 
+from app.models import Person, Skill
+
 
 def calc_time(func, *args, **kwargs):
     def inner(*args, **kwargs):
@@ -44,12 +46,16 @@ def parse_resume(filepath, *, delete_file=True):
         return data
 
 
-def get_context_from_data(data):
+def get_context_from_data(data, *, save_to_db=True):
     error = 'Not Available'
     phone = data.get('mobile_number')
     email = data.get('email')
     skills = data.get('skills')
     name = data.get('name')
+
+    if save_to_db:
+        _save_to_db(name, email, skills)
+
     context = {
         "name": error if name is None else name,
         "email": error if email is None else email,
@@ -57,3 +63,17 @@ def get_context_from_data(data):
         "skills": [] if not skills else skills,
     }
     return context
+
+
+def _save_to_db(name, email, skills):
+    if name is not None:
+        try:
+            Person(name=name, email=email).save()
+        except:
+            pass
+    for skill in skills:
+        try:
+            Skill(name=skill).save()
+        except Exception as e:
+            print(e)
+            pass
