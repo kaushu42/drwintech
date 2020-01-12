@@ -1,40 +1,30 @@
 import os
-import subprocess
 
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.core.files.storage import FileSystemStorage
 
-from pyresparser import ResumeParser
+
+from app import utils
 
 
 def index(request):
     if request.method == 'POST':
         file = request.FILES.get('resume', None)
+
         if file is None:
-            return render(request, 'upload.html', context={
-                "file_empty": True
-            })
-        fs = FileSystemStorage()
-        filename = fs.save('cv.' + file.name.split('.')[-1], file)
-        uploaded_file_url = fs.path(filename)
-        try:
-            data = ResumeParser(uploaded_file_url).get_extracted_data()
-        except:
-            return render(request, 'upload.html', context={
-                'is_bad_file': true
-            })
-        os.remove(uploaded_file_url)
+            return utils.render_error(request, 'upload.html', 'is_file_empty')
 
-        error = 'Not Available'
+        uploaded_file_url = utils.save_file(file)
 
-        context = {
-            'is_post': True,
-            'phone': data.get('mobile_number', error),
-            'email': data.get('email', error),
-            'skills': data.get('skills', error),
-            'name': data.get('name', error),
-        }
+        data, processing_time = utils.parse_resume(uploaded_file_url)
+
+        if data is None:
+            return utils.render_error(request, 'upload.html', 'is_bad_file')
+
+        context = utils.get_context_from_data(data)
+        context['is_post'] = True
+        context['time'] = processing_time
+
         print(context)
         return render(request, 'upload.html', context=context)
 

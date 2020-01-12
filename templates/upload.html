@@ -14,7 +14,7 @@
         style="background-color: #bd5d38; width:100%"
         value="Parse My Resume!"
       />
-      {% if file_empty %}
+      {% if is_file_empty %}
       <label for="resume" class=" m-3 text-danger">File was empty!</label>
       {% endif %} {% if is_bad_file %}
       <label for="resume" class=" m-3 text-danger">Bad file!</label>
@@ -47,6 +47,7 @@
       {% endfor %}
     </div>
   </section>
+  <div class="lead text-success">Time Taken: {{ time }}sec.</div>
   {% endif %}
 </div>
 {% endblock %}
