@@ -2,7 +2,8 @@
 import os
 import sys
 import subprocess
-
+import nltk
+nltk.download('stopwords')
 subprocess.call(['python', '-m', 'spacy', 'download', 'en_core_web_sm'])
 
 if __name__ == "__main__":
