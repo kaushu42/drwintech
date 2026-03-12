@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You ❤️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #ffe6e6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stage { display: none; animation: fadeIn 0.5s; }
+        .stage.active { display: block; }
+        h2 { font-size: 1.5rem; margin-bottom: 20px; color: #ff4d4d; }
+        .final-text { font-size: 2rem; font-weight: 600; color: #ff4d4d; margin: 40px 0; }
+        
+        button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 8px 0;
+            width: 100%;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+        button:active { background-color: #cc0000; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        input[type="text"], input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 2px solid #ffb3b3;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* T&C Scroll Box */
+        .tnc-box {
+            height: 150px;
+            overflow-y: scroll;
+            background: #fff0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: left;
+            margin-bottom: 15px;
+            border: 1px solid #ffb3b3;
+        }
+
+        /* Modal Styles */
+        #modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: popIn 0.3s;
+        }
+        #modal-btn { margin-top: 15px; width: auto; padding: 10px 30px; }
+
+        /* Slider */
+        input[type="range"] { width: 100%; margin: 20px 0; transition: transform 0.5s; }
+        .zoom-explode { transform: scale(3); opacity: 0; }
+
+        /* Drag and Drop Emojis */
+        #drag-container {
+            position: relative;
+            height: 150px;
+            width: 100%;
+            background: #fff0f0;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .emoji {
+            font-size: 3rem; position: absolute; top: 50%;
+            transform: translateY(-50%); user-select: none;
+        }
+        #emoji1 { left: 10%; z-index: 10; }
+        #emoji2 { right: 10%; pointer-events: none; }
+
+        /* Floating Particles */
+        .particle {
+            position: fixed;
+            font-size: 2rem;
+            z-index: 5;
+            animation: floatUp 2.5s linear forwards;
+            pointer-events: none;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="modal-overlay">
+    <div class="modal-content">
+        <div id="modal-text"></div>
+        <button id="modal-btn" onclick="closeModal()">OK</button>
+    </div>
+</div>
+
+<div class="container">
+    
+    <div id="stage1" class="stage active">
+        <h2>Enter Password</h2>
+        <p>Hint: It's what I always tell you.</p>
+        <input type="password" id="password" placeholder="Password...">
+        <button onclick="checkPassword()">Login</button>
+    </div>
+
+    <div id="stage2" class="stage">
+        <h2>End User Love Agreement</h2>
+        <div class="tnc-box" id="tnc-scroll" onscroll="checkScroll()">
+            <p>By proceeding, you agree to the following terms and conditions:</p>
+            <p>1. The user consents to mandatory cuddle sessions upon reunion.</p>
+            <p>2. The user agrees to relinquish control of the TV remote when requested.</p>
+            <p>3. The user acknowledges that I am always right (mostly).</p>
+            <p>4. The user agrees to accept random displays of affection without complaint.</p>
+            <p>5. The user confirms they miss me excessively.</p>
+            <p><i>(Scroll to the bottom to agree)</i></p>
+            <div style="height: 50px;"></div>
+        </div>
+        <button id="btn-agree" disabled onclick="agreeTNC()">I Agree</button>
+    </div>
+
+    <div id="stage3" class="stage">
+        <h2>What do I like the most about you?</h2>
+        <button class="bait-btn" onclick="baitClick(this)">Your face</button>
+        <button class="bait-btn" onclick="baitClick(this)">Your lips</button>
+        <button class="bait-btn" onclick="baitClick(this)">Your personality</button>
+        <button class="bait-btn" onclick="baitClick(this)">Your eyes</button>
+        <button class="bait-btn" onclick="baitClick(this)">Your 🍑</button>
+    </div>
+
+    <div id="stage4" class="stage">
+        <h2>What will we do when we meet?</h2>
+        <button id="seq1" onclick="seqClick(1)">Sit in separate corners of the room</button>
+        <button id="seq2" onclick="seqClick(2)" disabled>Shake hands and talk formally</button>
+        <button id="seq3" onclick="seqClick(3)" disabled>Go skydiving</button>
+        <button id="seq4" onclick="seqClick(4)" disabled>Not let go of each other for 7166272 hours</button>
+    </div>
+
+    <div id="stage5" class="stage">
+        <h2>Are you going to let me spoil you on our next date?</h2>
+        <button id="btn-changing" onclick="changeButton()">No</button>
+    </div>
+
+    <div id="stage6" class="stage">
+        <h2>How much do I love you?</h2>
+        <input type="range" id="love-slider" min="0" max="10" value="0">
+        <div id="slider-val">0</div>
+        <button onclick="checkSlider()">Submit</button>
+    </div>
+
+    <div id="stage7" class="stage">
+        <h2>Bring us together</h2>
+        <div id="drag-container">
+            <div id="emoji1" class="emoji">👩</div>
+            <div id="emoji2" class="emoji">👨</div>
+        </div>
+    </div>
+
+    <div id="stage8" class="stage">
+        <div class="final-text">I love you baby ❤️</div>
+    </div>
+
+</div>
+
+<script>
+    // --- Modal System ---
+    let modalCallback = null;
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalText = document.getElementById('modal-text');
+    const modalBtn = document.getElementById('modal-btn');
+
+    function showModal(text, callback = null, hideButton = false) {
+        modalText.innerHTML = text;
+        modalCallback = callback;
+        modalBtn.style.display = hideButton ? 'none' : 'inline-block';
+        modalOverlay.style.display = 'flex';
+    }
+
+    function closeModal() {
+        modalOverlay.style.display = 'none';
+        if (modalCallback) modalCallback();
+    }
+
+    // --- Particle System ---
+    function spawnEmojis() {
+        const emojis = ['❤️', '😘', '😍'];
+        for(let i=0; i<30; i++) {
+            let el = document.createElement('div');
+            el.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+            el.className = 'particle';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.animationDuration = (Math.random() * 2 + 1.5) + 's';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 4000);
+        }
+    }
+
+    // --- Navigation ---
+    function nextStage(stageNum) {
+        document.querySelectorAll('.stage').forEach(el => el.classList.remove('active'));
+        document.getElementById('stage' + stageNum).classList.add('active');
+        spawnEmojis();
+    }
+
+    // --- Stage 1: Login ---
+    function checkPassword() {
+        const val = document.getElementById('password').value.toLowerCase().replace(/\s/g, '');
+        if(val === 'iloveyou') {
+            nextStage(2);
+        } else {
+            showModal('Wrong password. Try again.');
+        }
+    }
+
+    // --- Stage 2: T&C ---
+    function checkScroll() {
+        const box = document.getElementById('tnc-scroll');
+        if (box.scrollTop + box.clientHeight >= box.scrollHeight - 5) {
+            document.getElementById('btn-agree').disabled = false;
+        }
+    }
+
+    function agreeTNC() {
+        showModal("Ready? 3...", null, true);
+        setTimeout(() => { modalText.innerHTML = "2..."; }, 1000);
+        setTimeout(() => { modalText.innerHTML = "1..."; }, 2000);
+        setTimeout(() => {
+            closeModal();
+            nextStage(3);
+        }, 3000);
+    }
+
+    // --- Stage 3: Bait and Switch ---
+    let clickedBait = 0;
+    const totalBait = 5;
+    function baitClick(btn) {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        clickedBait++;
+        if(clickedBait >= totalBait) {
+            showModal("Wrong! I love ALL of you because you're perfect.", () => nextStage(4));
+        }
+    }
+
+    // --- Stage 4: Sequential Rejections ---
+    function seqClick(step) {
+        if(step === 1) {
+            showModal("Seriously? 🤔");
+            document.getElementById('seq2').disabled = false;
+        } else if (step === 2) {
+            showModal("We are not doing a performance review. Try again.");
+            document.getElementById('seq3').disabled = false;
+        } else if (step === 3) {
+            showModal("Maybe one day, but not right away! Try again.");
+            document.getElementById('seq4').disabled = false;
+        } else if (step === 4) {
+            showModal("Exactly. Good choice.", () => nextStage(5));
+        }
+    }
+
+    // --- Stage 5: Changing Button ---
+    const changingTexts = ["Why not?", "Come on, I would love to....", "So you agree?", "Yes"];
+    let changeIndex = 0;
+    function changeButton() {
+        const btn = document.getElementById('btn-changing');
+        if (btn.innerText === "Yes") {
+            nextStage(6);
+        } else {
+            btn.innerText = changingTexts[changeIndex];
+            changeIndex++;
+        }
+    }
+
+    // --- Stage 6: Staged Slider ---
+    let sliderStep = 1;
+    const slider = document.getElementById('love-slider');
+    const sliderVal = document.getElementById('slider-val');
+    
+    slider.addEventListener('input', () => { sliderVal.innerText = slider.value; });
+
+    function checkSlider() {
+        if(sliderStep === 1 && slider.value == 10) {
+            showModal("Really? Come on choose a better number.");
+            slider.max = 50;
+            sliderStep = 2;
+        } else if (sliderStep === 2 && slider.value == 50) {
+            showModal("That’s better but still not enough.");
+            slider.max = 100;
+            sliderStep = 3;
+        } else if (sliderStep === 3 && slider.value == 100) {
+            slider.classList.add('zoom-explode');
+            showModal("Nooooo, the answer is infinity!", () => {
+                setTimeout(() => nextStage(7), 500);
+            });
+        }
+    }
+
+    // --- Stage 7: Drag Emojis ---
+    const emoji1 = document.getElementById('emoji1');
+    const emoji2 = document.getElementById('emoji2');
+    const dragContainer = document.getElementById('drag-container');
+    let isDragging = false;
+
+    emoji1.addEventListener('touchstart', () => { isDragging = true; }, {passive: true});
+    document.addEventListener('touchend', () => { isDragging = false; });
+    
+    dragContainer.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault(); 
+        
+        let touch = e.touches[0];
+        let containerRect = dragContainer.getBoundingClientRect();
+        let newLeft = touch.clientX - containerRect.left - (emoji1.clientWidth / 2);
+        
+        if(newLeft < 0) newLeft = 0;
+        if(newLeft > containerRect.width - emoji1.clientWidth) newLeft = containerRect.width - emoji1.clientWidth;
+        
+        emoji1.style.left = newLeft + 'px';
+
+        let rect1 = emoji1.getBoundingClientRect();
+        let rect2 = emoji2.getBoundingClientRect();
+        
+        if (!(rect1.right < rect2.left || rect1.left > rect2.right)) {
+            isDragging = false;
+            emoji1.style.left = (rect2.left - containerRect.left - 20) + 'px'; 
+            setTimeout(() => {
+                showModal("Okay they had a happy ending, but I can’t wait for ours baby 😘", () => {
+                    nextStage(8);
+                    // Loop emojis continuously on the final screen
+                    setInterval(spawnEmojis, 2500);
+                });
+            }, 300);
+        }
+    }, { passive: false });
+
+</script>
+</body>
+</html>
